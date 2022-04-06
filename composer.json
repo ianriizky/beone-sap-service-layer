@@ -1,0 +1,59 @@
+{
+    "name": "ianriizky/beone-sap-service-layer",
+    "description": "The bridging between your application and BeOne SAP Service Layer using Laravel HTTP Client.",
+    "type": "library",
+    "keywords": [
+        "php",
+        "laravel",
+        "beone",
+        "sap",
+        "service layer"
+    ],
+    "require": {
+        "php": "^8.0",
+        "illuminate/http": "~9.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Ianriizky\\BeoneSAPServiceLayer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ianriizky\\BeoneSAPServiceLayer\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Septianata Rizky Pratama",
+            "email": "septianata.pratama@beone-solution.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev": {
+        "orchestra/testbench": "^7.3",
+        "pestphp/pest": "^1.21"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php ./vendor/bin/testbench package:discover --ansi"
+        ],
+        "test": "vendor/bin/pest"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ianriizky\\BeoneSAPServiceLayer\\ServiceProvider"
+            ],
+            "aliases": {
+                "SAPServiceLayer": "Ianriizky\\BeoneSAPServiceLayer\\Support\\Facades\\SAPServiceLayer"
+            }
+        }
+    }
+}

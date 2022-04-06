@@ -1,0 +1,59 @@
+# GitHub Action for Laravel
+# https://github.com/shivammathur/setup-php/blob/master/examples/laravel-mysql.yml
+name: Testing Laravel
+
+on: [push, pull_request]
+
+jobs:
+  laravel:
+    name: Laravel (PHP ${{ matrix.php-versions }})
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['8.0', '8.1']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Docs: https://github.com/shivammathur/setup-php
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: mbstring, dom, fileinfo, curl
+          coverage: xdebug
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          # Use composer.json for key, if composer.lock is not committed.
+          # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install composer dependencies
+        run: |
+          composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Test with pest
+        run: |
+          mkdir -p build/logs
+          vendor/bin/pest --verbose --coverage-clover build/logs/clover.xml
+        env:
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+
+      - name: Upload coverage results to coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          composer global require php-coveralls/php-coveralls
+          php-coveralls --coverage_clover=build/logs/clover.xml -v
