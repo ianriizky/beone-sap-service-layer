@@ -1,7 +1,7 @@
 # beone-sap-service-layer
 
 [![Build Status](https://github.com/ianriizky/beone-sap-service-layer/actions/workflows/laravel.yml/badge.svg)](https://github.com/ianriizky/beone-sap-service-layer/actions)
-[![Quality Score](https://img.shields.io/scrutinizer/g/ianriizky/beone-sap-service-layer.svg?style=flat)](https://scrutinizer-ci.com/g/ianriizky/beone-sap-service-layer)
+[![StyleCI](https://github.styleci.io/repos/478463042/shield)](https://github.styleci.io/repos/478463042)
 [![Coverage Status](https://coveralls.io/repos/github/ianriizky/beone-sap-service-layer/badge.svg)](https://coveralls.io/github/ianriizky/beone-sap-service-layer)
 [![Latest Stable Version](https://poser.pugx.org/ianriizky/beone-sap-service-layer/v/stable.svg)](https://packagist.org/packages/ianriizky/beone-sap-service-layer)
 [![Total Downloads](https://poser.pugx.org/ianriizky/beone-sap-service-layer/d/total.svg)](https://packagist.org/packages/ianriizky/beone-sap-service-layer)
