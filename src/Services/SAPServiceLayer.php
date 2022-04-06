@@ -79,7 +79,7 @@ class SAPServiceLayer
     {
         $this->request = Http::baseUrl($this->config['base_url'])->withOptions($options);
 
-        if (!is_null($sslVerify)) {
+        if (! is_null($sslVerify)) {
             $this->request->withOptions(['verify' => $sslVerify]);
         }
     }
@@ -97,7 +97,7 @@ class SAPServiceLayer
     {
         $response = $this->{$method}(...$parameters);
 
-        if (!$response instanceof Response) {
+        if (! $response instanceof Response) {
             throw new RuntimeException(sprintf(
                 'The return value from method %s::%s must be an instance of %s class.',
                 static::class, $method, Response::class
@@ -130,7 +130,7 @@ class SAPServiceLayer
             ));
         }
 
-        if (!$this->isRequestAuthenticated()) {
+        if (! $this->isRequestAuthenticated()) {
             $this->authenticateRequest();
         }
 

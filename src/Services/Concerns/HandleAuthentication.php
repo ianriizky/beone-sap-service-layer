@@ -75,7 +75,7 @@ trait HandleAuthentication
     protected function reattemptLoginWhenUnauthorized(int $times, int $sleep = 0, bool $throw = true)
     {
         $this->request->retry($times, $sleep, function (Throwable $exception, PendingRequest $request) {
-            if (!$exception instanceof RequestException || $exception->getCode() !== HttpResponse::HTTP_UNAUTHORIZED) {
+            if (! $exception instanceof RequestException || $exception->getCode() !== HttpResponse::HTTP_UNAUTHORIZED) {
                 return false;
             }
 
