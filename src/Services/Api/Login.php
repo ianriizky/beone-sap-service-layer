@@ -19,21 +19,22 @@ trait Login
      */
     protected function Login(array $data): Response
     {
-        return $this->sendLoginRequest($data, $this->request);
+        return static::sendLoginRequest($data, $this->request);
     }
 
     /**
      * Send login request to the SAP service layer.
+     *
      * This will method is run by using an independent $request instance from the parameter,
-     * so the $request property from the class will not be affected by this process.
+     * so the $request property from the class will not be affected by this method.
      *
      * @param  array  $data
-     * @param  \Illuminate\Http\Client\PendingRequest|null  $request
+     * @param  \Illuminate\Http\Client\PendingRequest  $request
      * @return \Illuminate\Http\Client\Response
      */
-    protected function sendLoginRequest(array $data, PendingRequest $request = null): Response
+    protected static function sendLoginRequest(array $data, PendingRequest $request): Response
     {
-        return ($request ?? $this->request)->post('/Login', Arr::only($data, [
+        return $request->post('/Login', Arr::only($data, [
             'CompanyDB', 'UserName', 'Password',
         ]));
     }

@@ -19,7 +19,6 @@ class SAPServiceLayer
         __call as macroCall;
     }
     use Api\ChartOfAccounts;
-    use Api\Login;
     use Concerns\HandleAuthentication;
 
     /**
@@ -36,14 +35,14 @@ class SAPServiceLayer
         'authenticateRequest',
         'getCookiesFromLogin',
         'getCredentials',
-        'reattemptLoginWhenUnauthorized',
+        'retryRequestWhenUnauthorized',
 
         // Api\Login
         'sendLoginRequest',
     ];
 
     /**
-     * Instance of \Illuminate\Http\Client\PendingRequest to make the request.
+     * Instance of \Illuminate\Http\Client\PendingRequest to build the request.
      *
      * @var \Illuminate\Http\Client\PendingRequest
      */
@@ -62,14 +61,14 @@ class SAPServiceLayer
             $sslVerify, Arr::except($config['guzzle_options'], 'verify')
         );
 
-        $this->reattemptLoginWhenUnauthorized(
+        $this->retryRequestWhenUnauthorized(
             $config['request_retry_times'],
             $config['request_retry_sleep']
         );
     }
 
     /**
-     * Create Laravel HTTP client request instance.
+     * Create a Laravel HTTP client request instance.
      *
      * @param  string|bool|null  $sslVerify
      * @param  array  $options
@@ -82,6 +81,8 @@ class SAPServiceLayer
         if (! is_null($sslVerify)) {
             $this->request->withOptions(['verify' => $sslVerify]);
         }
+
+        $this->request->beforeSending($this->authenticateRequest());
     }
 
     /**
@@ -128,10 +129,6 @@ class SAPServiceLayer
             throw new BadMethodCallException(sprintf(
                 'Method %s::%s is in the escaped method list.', static::class, $method
             ));
-        }
-
-        if (! $this->isRequestAuthenticated()) {
-            $this->authenticateRequest();
         }
 
         return $this->sendRequestToSAP($method, $parameters);
