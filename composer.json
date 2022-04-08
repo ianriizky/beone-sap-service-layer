@@ -11,8 +11,9 @@
     ],
     "require": {
         "php": "^8.0",
+        "guzzlehttp/guzzle": "^7.2",
         "illuminate/http": "~9.0",
-        "guzzlehttp/guzzle": "^7.2"
+        "illuminate/support": "~9.0"
     },
     "license": "MIT",
     "autoload": {
