@@ -2,7 +2,6 @@
 
 namespace Ianriizky\BeoneSAPServiceLayer\Services\Concerns;
 
-use Closure;
 use GuzzleHttp\Cookie\CookieJar;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
@@ -18,7 +17,7 @@ use Throwable;
 trait HandleAuthentication
 {
     /**
-     * Determine whether the cookies value of request instance has been set.
+     * Determine whether the request instance is authenticated or not
      *
      * @return bool
      */
@@ -28,7 +27,7 @@ trait HandleAuthentication
     }
 
     /**
-     * Set cookies value of request instance for authentication purpose.
+     * Set authentication data of the request instance.
      *
      * @return void
      */
