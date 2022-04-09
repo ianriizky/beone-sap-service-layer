@@ -10,7 +10,6 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -21,6 +20,43 @@ use Throwable;
 trait HandleAuthentication
 {
     use Api\Login;
+    use HandlePendingRequest;
+
+    /**
+     * Create a callback to set authentication data before sending the request.
+     *
+     * @return \Closure
+     */
+    protected function authenticateRequest(): Closure
+    {
+        return function (Request $request, array $options, PendingRequest $pendingRequest) {
+            if (! Str::contains($request->url(), '/Login') && ! static::isRequestAuthenticated($pendingRequest)) {
+                $pendingRequest->withOptions([
+                    'cookies' => $this->getCookiesFromLogin($pendingRequest),
+                ]);
+            }
+        };
+    }
+
+    /**
+     * Create a callback to handle request retrying process when the given response is unauthorized.
+     *
+     * @return \Closure
+     */
+    protected function retryRequestWhenUnauthorized(): Closure
+    {
+        return function (Throwable $exception, PendingRequest $request) {
+            if (! $exception instanceof RequestException || $exception->getCode() !== HttpResponse::HTTP_UNAUTHORIZED) {
+                return false;
+            }
+
+            $request->withOptions([
+                'cookies' => $this->getCookiesFromLogin($this->createFreshRequestInstance()),
+            ]);
+
+            return true;
+        };
+    }
 
     /**
      * Determine whether the request instance is authenticated or not.
@@ -31,20 +67,6 @@ trait HandleAuthentication
     protected static function isRequestAuthenticated(PendingRequest $request): bool
     {
         return Arr::exists($request->getOptions(), 'cookies');
-    }
-
-    /**
-     * Create a callback to set authentication data before sending the request.
-     *
-     * @return \Closure
-     */
-    protected function authenticateRequest(): Closure
-    {
-        return function (Request $request, array $options, PendingRequest $pendingRequest) {
-            if (! static::isRequestAuthenticated($pendingRequest) && !Str::contains($request->url(), '/Login')) {
-                $pendingRequest->withOptions(['cookies' => $this->getCookiesFromLogin($pendingRequest)]);
-            }
-        };
     }
 
     /**
@@ -70,31 +92,5 @@ trait HandleAuthentication
             'UserName' => $this->config['username'],
             'Password' => $this->config['password'],
         ];
-    }
-
-    /**
-     * Register closure on the request instance to handle request retrying process
-     * when the given response is unauthorized.
-     *
-     * @param  int  $times
-     * @param  int  $sleep
-     * @param  bool  $throw
-     * @return void
-     */
-    protected function retryRequestWhenUnauthorized(int $times, int $sleep = 0, bool $throw = true)
-    {
-        $this->request->retry($times, $sleep, function (Throwable $exception, PendingRequest $request) {
-            if (! $exception instanceof RequestException || $exception->getCode() !== HttpResponse::HTTP_UNAUTHORIZED) {
-                return false;
-            }
-
-            $newRequestInstanceWithoutRetrying =
-                Http::baseUrl($this->config['base_url'])
-                    ->withOptions($request->getOptions());
-
-            $request->withOptions(['cookies' => $this->getCookiesFromLogin($newRequestInstanceWithoutRetrying)]);
-
-            return true;
-        }, $throw);
     }
 }

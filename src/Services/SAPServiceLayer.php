@@ -6,7 +6,6 @@ use BadMethodCallException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Traits\Macroable;
 use RuntimeException;
 
@@ -57,32 +56,20 @@ class SAPServiceLayer
      */
     public function __construct(protected array $config, $sslVerify = null)
     {
-        $this->createRequestInstance(
-            $sslVerify, Arr::except($config['guzzle_options'], 'verify')
+        $this->request = $this->createRequestInstance(
+            $this->config['base_url'],
+            $sslVerify,
+            Arr::except($config['guzzle_options'], 'verify')
         );
-
-        $this->retryRequestWhenUnauthorized(
-            $config['request_retry_times'],
-            $config['request_retry_sleep']
-        );
-    }
-
-    /**
-     * Create a Laravel HTTP client request instance.
-     *
-     * @param  string|bool|null  $sslVerify
-     * @param  array  $options
-     * @return void
-     */
-    protected function createRequestInstance($sslVerify = null, array $options)
-    {
-        $this->request = Http::baseUrl($this->config['base_url'])->withOptions($options);
-
-        if (! is_null($sslVerify)) {
-            $this->request->withOptions(['verify' => $sslVerify]);
-        }
 
         $this->request->beforeSending($this->authenticateRequest());
+
+        $this->request->retry(
+            $config['request_retry_times'],
+            $config['request_retry_sleep'],
+            $this->retryRequestWhenUnauthorized(),
+            true
+        );
     }
 
     /**
