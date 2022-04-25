@@ -14,14 +14,14 @@ trait HandlePendingRequest
      *
      * @var string
      */
-    protected string $baseUrl;
+    protected $baseUrl;
 
     /**
      * List of option used on the \Illuminate\Http\Client\PendingRequest::withOptions() instance.
      *
      * @var array
      */
-    protected array $options;
+    protected $options;
 
     /**
      * Create a Laravel HTTP client request instance.

@@ -3,7 +3,6 @@
 namespace Ianriizky\BeoneSAPServiceLayer\Services;
 
 use BadMethodCallException;
-use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Traits\Macroable;
@@ -45,7 +44,14 @@ class SAPServiceLayer
      *
      * @var \Illuminate\Http\Client\PendingRequest
      */
-    protected PendingRequest $request;
+    protected $request;
+
+    /**
+     * List of config value.
+     *
+     * @var array
+     */
+    protected $config;
 
     /**
      * Create a new instance class.
@@ -54,8 +60,10 @@ class SAPServiceLayer
      * @param  string|bool|null  $sslVerify
      * @return void
      */
-    public function __construct(protected array $config, $sslVerify = null)
+    public function __construct(array $config, $sslVerify = null)
     {
+        $this->config = $config;
+
         $this->request = $this->createRequestInstance(
             $this->config['base_url'],
             $sslVerify,

@@ -1,19 +1,22 @@
 # GitHub Action for Laravel
 # https://github.com/shivammathur/setup-php/blob/master/examples/laravel-mysql.yml
-name: Testing Laravel
+name: Testing Laravel 9.*
 
 on: [push, pull_request]
 
 jobs:
-  laravel:
-    name: Laravel (PHP ${{ matrix.php-versions }})
+  testing-package:
+    name: PHP ${{ matrix.php-versions }} - Laravel ${{ matrix.laravel-versions }} - ${{ matrix.composer-dependency-versions }}
 
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['8.0', '8.1']
+        php-versions: [8.0, 8.1]
+        laravel-versions: [9.*]
+        testbench-version: [7.*]
+        composer-dependency-versions: [prefer-stable]
 
     steps:
       - name: Checkout
@@ -42,7 +45,9 @@ jobs:
 
       - name: Install composer dependencies
         run: |
-          composer install --no-progress --prefer-dist --optimize-autoloader
+          composer require "illuminate/http:${{ matrix.laravel-versions }}" "illuminate/support:${{ matrix.laravel-versions }}" --no-interaction --no-update
+          composer require "orchestra/testbench:${{ matrix.testbench-version }}" --dev --no-interaction --no-update
+          composer update --prefer-dist --optimize-autoloader --no-interaction --no-progress --${{ matrix.composer-dependency-versions }}
 
       - name: Test with pest
         run: |
