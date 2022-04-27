@@ -16,5 +16,10 @@
     </coverage>
     <php>
         <env name="APP_KEY" value="base64:ioXW1I3InmXzhqfD+wKzQyZJmYWNFAATtrVtY1oAi5w=" />
+        <env name="APP_ENV" value="testing" />
+        <env name="SAP_BASE_URL" value="https://b1webconnect.beonesolution.com:51001/b1s/v1" />
+        <env name="SAP_COMPANY_DB" value="SBODEMOAU" />
+        <env name="SAP_USERNAME" value="manager" />
+        <env name="SAP_PASSWORD" value="12345" />
     </php>
 </phpunit>

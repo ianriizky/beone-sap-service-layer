@@ -22,7 +22,7 @@ composer require ianriizky/beone-sap-service-layer
 
 ## Testing
 ```bash
-./vendor/bin/pest
+composer test
 ```
 
 ## Changelog

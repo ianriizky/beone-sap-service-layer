@@ -2,13 +2,10 @@
 
 namespace Ianriizky\BeoneSAPServiceLayer\Tests;
 
-use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 class TestCase extends OrchestraTestCase
 {
-    use LazilyRefreshDatabase;
-
     /**
      * {@inheritDoc}
      */
@@ -35,18 +32,5 @@ class TestCase extends OrchestraTestCase
     protected function getApplicationTimezone($app)
     {
         return 'Asia/Jakarta';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function defineEnvironment($app)
-    {
-        $app['config']->set('database.connections.sqlite', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-        ]);
-
-        $app['config']->set('database.default', 'sqlite');
     }
 }

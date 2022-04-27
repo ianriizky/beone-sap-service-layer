@@ -24,7 +24,10 @@
     "autoload-dev": {
         "psr-4": {
             "Ianriizky\\BeoneSAPServiceLayer\\Tests\\": "tests/"
-        }
+        },
+        "files": [
+            "tests/helpers.php"
+        ]
     },
     "authors": [
         {
@@ -34,19 +37,13 @@
     ],
     "minimum-stability": "stable",
     "require-dev": {
-        "orchestra/testbench": "^7.3",
-        "pestphp/pest": "^1.21"
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
+        "orchestra/testbench": "^7.3"
     },
     "scripts": {
         "post-autoload-dump": [
             "@php ./vendor/bin/testbench package:discover --ansi"
         ],
-        "test": "vendor/bin/pest"
+        "test": "vendor/bin/phpunit --testdox"
     },
     "extra": {
         "laravel": {

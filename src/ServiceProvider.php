@@ -37,7 +37,7 @@ class ServiceProvider extends BaseServiceProvider
              * @see https://docs.guzzlephp.org/en/stable/request-options.html#verify
              * @see https://curl.se/libcurl/c/libcurl-errors.html
              */
-            $sslVerify = $app['config']->get('sap.ssl_verify') ?? ($app['env'] === 'local' ? false : null);
+            $sslVerify = $app['config']->get('sap.ssl_verify') ?? (! $app->isProduction() ? false : null);
 
             return new SAPServiceLayer(
                 Arr::except($app['config']['sap'], 'ssl_verify'),

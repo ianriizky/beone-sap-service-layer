@@ -49,10 +49,10 @@ jobs:
           composer require "orchestra/testbench:${{ matrix.testbench-version }}" --dev --no-interaction --no-update
           composer update --prefer-dist --optimize-autoloader --no-interaction --no-progress --${{ matrix.composer-dependency-versions }}
 
-      - name: Test with pest
+      - name: Test with phpunit
         run: |
           mkdir -p build/logs
-          vendor/bin/pest --verbose --coverage-clover build/logs/clover.xml
+          vendor/bin/phpunit --testdox --coverage-clover build/logs/clover.xml
         env:
           DB_PORT: ${{ job.services.mysql.ports[3306] }}
 
