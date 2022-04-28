@@ -39,26 +39,6 @@ trait HandleAuthentication
     }
 
     /**
-     * Create a callback to handle request retrying process when the given response is unauthorized.
-     *
-     * @return \Closure
-     */
-    protected function retryRequestWhenUnauthorized(): Closure
-    {
-        return function (Throwable $exception, PendingRequest $request) {
-            if (! $exception instanceof RequestException || $exception->getCode() !== HttpResponse::HTTP_UNAUTHORIZED) {
-                return false;
-            }
-
-            $request->withOptions([
-                'cookies' => $this->getCookiesFromLogin($this->createFreshRequestInstance()),
-            ]);
-
-            return true;
-        };
-    }
-
-    /**
      * Determine whether the request instance is authenticated or not.
      *
      * @param  \Illuminate\Http\Client\PendingRequest  $request
@@ -92,5 +72,25 @@ trait HandleAuthentication
             'UserName' => $this->config['username'],
             'Password' => $this->config['password'],
         ];
+    }
+
+    /**
+     * Create a callback to handle request retrying process when the given response is unauthorized.
+     *
+     * @return \Closure
+     */
+    protected function retryRequestWhenUnauthorized(): Closure
+    {
+        return function (Throwable $exception, PendingRequest $request) {
+            if (! $exception instanceof RequestException || $exception->getCode() !== HttpResponse::HTTP_UNAUTHORIZED) {
+                return false;
+            }
+
+            $request->withOptions([
+                'cookies' => $this->getCookiesFromLogin($this->createFreshRequestInstance()),
+            ]);
+
+            return true;
+        };
     }
 }
