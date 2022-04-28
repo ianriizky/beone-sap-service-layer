@@ -83,7 +83,7 @@ trait HandleAuthentication
     /**
      * Return list of credential value from the config.
      *
-     * @return array
+     * @return array<string, string>
      */
     protected function getCredentials(): array
     {
