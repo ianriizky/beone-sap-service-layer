@@ -6,8 +6,9 @@ use Closure;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\CookieJarInterface;
 use GuzzleHttp\Cookie\SetCookie;
+use Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest;
 use Ianriizky\BeoneSAPServiceLayer\Services\Api;
-use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Str;
@@ -16,7 +17,7 @@ use Psr\Http\Message\RequestInterface;
 use Throwable;
 
 /**
- * @property \Illuminate\Http\Client\PendingRequest $request
+ * @property \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest $request
  * @property array $config
  */
 trait HandleAuthentication
@@ -31,26 +32,25 @@ trait HandleAuthentication
      */
     protected function authenticateRequest(): callable
     {
-        return function (callable $handler): callable {
-            return function (RequestInterface $request, array $options) use ($handler) {
-                return $handler((function (RequestInterface $request) use ($options) {
-                    if (Str::contains((string) $request->getUri(), '/Login')) {
-                        return $request;
-                    }
+        return function (Request $request, array $options, PendingRequest $pendingRequest): RequestInterface {
+            if (Str::contains($request->url(), '/Login')) {
+                return $request->toPsrRequest();
+            }
 
-                    $cookies = $options['cookies'] ?? null;
+            $cookies = $options['cookies'] ?? null;
 
-                    if (! $cookies instanceof CookieJarInterface) {
-                        throw new InvalidArgumentException('Cookies must be an instance of ' . CookieJarInterface::class);
-                    }
+            if (! $cookies instanceof CookieJarInterface) {
+                throw new InvalidArgumentException('Cookies must be an instance of ' . CookieJarInterface::class);
+            }
 
-                    if (! static::isRequestAuthenticated($cookies)) {
-                        return $this->getCookiesFromLogin($this->request)->withCookieHeader($request);
-                    }
+            if (! static::isRequestAuthenticated($cookies)) {
+                $cookies = $this->getCookiesFromLogin($this->request);
+                $pendingRequest->withOptions(compact('cookies'));
 
-                    return $request;
-                })($request), $options);
-            };
+                return $cookies->withCookieHeader($request->toPsrRequest());
+            }
+
+            return $request->toPsrRequest();
         };
     }
 
@@ -70,7 +70,7 @@ trait HandleAuthentication
     /**
      * Return cookies value from the "/Login" request for authentication purpose.
      *
-     * @param  \Illuminate\Http\Client\PendingRequest  $request
+     * @param  \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest  $request
      * @return \GuzzleHttp\Cookie\CookieJar
      */
     protected function getCookiesFromLogin(PendingRequest $request): CookieJar

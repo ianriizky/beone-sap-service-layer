@@ -2,12 +2,12 @@
 
 namespace Ianriizky\BeoneSAPServiceLayer\Services\Api;
 
-use Illuminate\Http\Client\PendingRequest;
+use Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
 
 /**
- * @property \Illuminate\Http\Client\PendingRequest $request
+ * @property \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest $request
  */
 trait Login
 {
@@ -29,7 +29,7 @@ trait Login
      * so the $request property from the class will not be affected by this method.
      *
      * @param  array  $data
-     * @param  \Illuminate\Http\Client\PendingRequest  $request
+     * @param  \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest  $request
      * @return \Illuminate\Http\Client\Response
      */
     protected static function sendLoginRequest(array $data, PendingRequest $request): Response

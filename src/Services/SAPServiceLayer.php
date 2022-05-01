@@ -40,9 +40,9 @@ class SAPServiceLayer
     ];
 
     /**
-     * Instance of \Illuminate\Http\Client\PendingRequest to build the request.
+     * Instance of PendingRequest to build the request.
      *
-     * @var \Illuminate\Http\Client\PendingRequest
+     * @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest
      */
     protected $request;
 
@@ -70,7 +70,7 @@ class SAPServiceLayer
             Arr::except($config['guzzle_options'], 'verify')
         );
 
-        $this->request->withMiddleware($this->authenticateRequest());
+        $this->request->beforeSending($this->authenticateRequest());
 
         $this->request->retry(
             $config['request_retry_times'],

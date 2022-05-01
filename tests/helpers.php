@@ -11,7 +11,7 @@ function phpunit_validate_request_header(Illuminate\Http\Client\Request $request
     return
         $request->hasHeader('Authorization') &&
         $request->hasHeader('Date') &&
-        Illuminate\Support\Carbon::hasFormat($request->header('Date'), Carbon\CarbonInterface::RFC7231_FORMAT);
+        Illuminate\Support\Carbon::hasFormat($request->header('Date')[0], Carbon\CarbonInterface::RFC7231_FORMAT);
 }
 
 /**
@@ -26,7 +26,7 @@ function phpunit_create_http_fake_response(string $jsonPath, $status = 200, $hea
 {
     $body = json_decode(file_get_contents(__DIR__.'../../responses/'.$jsonPath), true);
 
-    return \Illuminate\Support\Facades\Http::response($body, $status, $headers);
+    return \Ianriizky\BeoneSAPServiceLayer\Support\Facades\Http::response($body, $status, $headers);
 }
 
 /**

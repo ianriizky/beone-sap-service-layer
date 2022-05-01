@@ -5,7 +5,7 @@ namespace Ianriizky\BeoneSAPServiceLayer\Services\Api;
 use Illuminate\Http\Client\Response;
 
 /**
- * @property \Illuminate\Http\Client\PendingRequest $request
+ * @property \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest $request
  */
 trait ChartOfAccounts
 {
