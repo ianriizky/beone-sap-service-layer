@@ -4,13 +4,15 @@ namespace Ianriizky\BeoneSAPServiceLayer\Services\Concerns;
 
 use Closure;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\CookieJarInterface;
+use GuzzleHttp\Cookie\SetCookie;
 use Ianriizky\BeoneSAPServiceLayer\Services\Api;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Response as HttpResponse;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
+use Psr\Http\Message\RequestInterface;
 use Throwable;
 
 /**
@@ -25,28 +27,44 @@ trait HandleAuthentication
     /**
      * Create a callback to set authentication data before sending the request.
      *
-     * @return \Closure
+     * @return callable
      */
-    protected function authenticateRequest(): Closure
+    protected function authenticateRequest(): callable
     {
-        return function (Request $request, array $options, PendingRequest $pendingRequest) {
-            if (! Str::contains($request->url(), '/Login') && ! static::isRequestAuthenticated($pendingRequest)) {
-                $pendingRequest->withOptions([
-                    'cookies' => $this->getCookiesFromLogin($pendingRequest),
-                ]);
-            }
+        return function (callable $handler): callable {
+            return function (RequestInterface $request, array $options) use ($handler) {
+                return $handler((function (RequestInterface $request) use ($options) {
+                    if (Str::contains((string) $request->getUri(), '/Login')) {
+                        return $request;
+                    }
+
+                    $cookies = $options['cookies'] ?? null;
+
+                    if (! $cookies instanceof CookieJarInterface) {
+                        throw new InvalidArgumentException('Cookies must be an instance of ' . CookieJarInterface::class);
+                    }
+
+                    if (! static::isRequestAuthenticated($cookies)) {
+                        return $this->getCookiesFromLogin($this->request)->withCookieHeader($request);
+                    }
+
+                    return $request;
+                })($request), $options);
+            };
         };
     }
 
     /**
      * Determine whether the request instance is authenticated or not.
      *
-     * @param  \Illuminate\Http\Client\PendingRequest  $request
+     * @param  \GuzzleHttp\Cookie\CookieJarInterface  $cookies
      * @return bool
      */
-    protected static function isRequestAuthenticated(PendingRequest $request): bool
+    protected static function isRequestAuthenticated(CookieJarInterface $cookies): bool
     {
-        return Arr::exists($request->getOptions(), 'cookies');
+        return collect($cookies)->filter(function (SetCookie $cookie) {
+            return $cookie->getName() === 'B1SESSION';
+        })->count() > 0;
     }
 
     /**

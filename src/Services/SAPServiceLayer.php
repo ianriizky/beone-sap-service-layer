@@ -70,7 +70,7 @@ class SAPServiceLayer
             Arr::except($config['guzzle_options'], 'verify')
         );
 
-        $this->request->beforeSending($this->authenticateRequest());
+        $this->request->withMiddleware($this->authenticateRequest());
 
         $this->request->retry(
             $config['request_retry_times'],
