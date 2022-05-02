@@ -40,7 +40,7 @@ trait HandleAuthentication
             $cookies = $options['cookies'] ?? null;
 
             if (! $cookies instanceof CookieJarInterface) {
-                throw new InvalidArgumentException('Cookies must be an instance of ' . CookieJarInterface::class);
+                throw new InvalidArgumentException('Cookies must be an instance of '.CookieJarInterface::class);
             }
 
             if (! static::isRequestAuthenticated($cookies)) {
