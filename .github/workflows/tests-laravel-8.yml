@@ -1,12 +1,12 @@
 # GitHub Action for Laravel
 # https://github.com/shivammathur/setup-php/blob/master/examples/laravel-mysql.yml
-name: Testing Laravel 8.*
+name: tests-laravel-8
 
 on: [push, pull_request]
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }} - Laravel 8 - ${{ matrix.stability }}
+    name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
 
     runs-on: ubuntu-latest
 
@@ -37,13 +37,6 @@ jobs:
           max_attempts: 5
           command: composer require league/commonmark:^2.0.2 phpunit/phpunit:^9.5.8 ramsey/collection:^1.2 brick/math:^0.9.3 --no-interaction --no-update
         if: matrix.php >= 8.1
-
-      - name: Install testbench
-        uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer require orchestra/testbench:^6.27 --dev --no-interaction --no-update
 
       - name: Install composer dependencies
         uses: nick-invision/retry@v1
