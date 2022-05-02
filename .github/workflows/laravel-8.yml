@@ -5,18 +5,18 @@ name: Testing Laravel 8.*
 on: [push, pull_request]
 
 jobs:
-  testing-package:
-    name: PHP ${{ matrix.php-versions }} - Laravel ${{ matrix.laravel-versions }} - ${{ matrix.composer-dependency-versions }}
+  tests:
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.stability }}
 
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
-        php-versions: [7.3, 7.4, 8.0, 8.1]
-        laravel-versions: [8.*]
-        testbench-version: [6.*]
-        composer-dependency-versions: [prefer-stable]
+        php: [7.3, 7.4, 8.0, 8.1]
+        laravel: [8.*]
+        testbench: [6.*]
+        stability: [prefer-lowest, prefer-stable]
 
     steps:
       - name: Checkout
@@ -26,35 +26,48 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php }}
           extensions: mbstring, dom, fileinfo, curl
+          ini-values: error_reporting=E_ALL
+          tools: composer:v2
           coverage: xdebug
 
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache composer dependencies
-        uses: actions/cache@v2
+      - name: Set Minimum PHP 8.0 Versions
+        uses: nick-invision/retry@v1
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          # Use composer.json for key, if composer.lock is not committed.
-          # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+          timeout_minutes: 5
+          max_attempts: 5
+          command: composer require guzzlehttp/guzzle:^7.2 --no-interaction --no-update
+        if: matrix.php >= 8
+
+      - name: Set Minimum PHP 8.1 Versions
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 5
+          max_attempts: 5
+          command: composer require league/commonmark:^2.0.2 phpunit/phpunit:^9.5.8 ramsey/collection:^1.2 brick/math:^0.9.3 --no-interaction --no-update
+        if: matrix.php >= 8.1
+
+      - name: Install testbench
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 5
+          max_attempts: 5
+          command: composer require "orchestra/testbench:${{ matrix.testbench }}" --dev --no-interaction --no-update
 
       - name: Install composer dependencies
-        run: |
-          composer require "illuminate/http:${{ matrix.laravel-versions }}" "illuminate/support:${{ matrix.laravel-versions }}" --no-interaction --no-update
-          composer require "orchestra/testbench:${{ matrix.testbench-version }}" --dev --no-interaction --no-update
-          composer update --prefer-dist --optimize-autoloader --no-interaction --no-progress --${{ matrix.composer-dependency-versions }}
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 5
+          max_attempts: 5
+          command: |
+            composer require "illuminate/http:${{ matrix.laravel }}" "illuminate/support:${{ matrix.laravel }}" --no-interaction --no-update
+            composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
-      - name: Test with phpunit
+      - name: Execute tests
         run: |
           mkdir -p build/logs
           vendor/bin/phpunit --testdox --coverage-clover build/logs/clover.xml
-        env:
-          DB_PORT: ${{ job.services.mysql.ports[3306] }}
 
       - name: Upload coverage results to coveralls
         env:
