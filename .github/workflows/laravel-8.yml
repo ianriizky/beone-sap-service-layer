@@ -6,7 +6,7 @@ on: [push, pull_request]
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.stability }}
+    name: PHP ${{ matrix.php }} - Laravel 8 - ${{ matrix.stability }}
 
     runs-on: ubuntu-latest
 
@@ -14,8 +14,6 @@ jobs:
       fail-fast: true
       matrix:
         php: ['7.3', '7.4', '8.0', '8.1']
-        laravel: [8.*]
-        testbench: [6.*]
         stability: [prefer-lowest, prefer-stable]
 
     steps:
@@ -32,14 +30,6 @@ jobs:
           tools: composer:v2
           coverage: xdebug
 
-      - name: Set Minimum PHP 8.0 Versions
-        uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer require guzzlehttp/guzzle:^7.2 --no-interaction --no-update
-        if: matrix.php >= 8
-
       - name: Set Minimum PHP 8.1 Versions
         uses: nick-invision/retry@v1
         with:
@@ -53,7 +43,7 @@ jobs:
         with:
           timeout_minutes: 5
           max_attempts: 5
-          command: composer require "orchestra/testbench:${{ matrix.testbench }}" --dev --no-interaction --no-update
+          command: composer require orchestra/testbench:^6.27 --dev --no-interaction --no-update
 
       - name: Install composer dependencies
         uses: nick-invision/retry@v1
@@ -61,7 +51,6 @@ jobs:
           timeout_minutes: 5
           max_attempts: 5
           command: |
-            composer require "illuminate/http:${{ matrix.laravel }}" "illuminate/support:${{ matrix.laravel }}" --no-interaction --no-update
             composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
       - name: Execute tests
