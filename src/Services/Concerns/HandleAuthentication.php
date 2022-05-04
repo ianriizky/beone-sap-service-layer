@@ -23,7 +23,7 @@ use Throwable;
 trait HandleAuthentication
 {
     use Api\Login;
-    use HandlePendingRequest;
+    use HandleHTTPClient;
 
     /**
      * Create a callback to set authentication data before sending the request.

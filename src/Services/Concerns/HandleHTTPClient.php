@@ -5,7 +5,7 @@ namespace Ianriizky\BeoneSAPServiceLayer\Services\Concerns;
 use Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest;
 use Ianriizky\BeoneSAPServiceLayer\Support\Facades\Http;
 
-trait HandlePendingRequest
+trait HandleHTTPClient
 {
     use ParseUrl;
 

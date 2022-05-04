@@ -38,10 +38,7 @@
     "autoload-dev": {
         "psr-4": {
             "Ianriizky\\BeoneSAPServiceLayer\\Tests\\": "tests/"
-        },
-        "files": [
-            "tests/helpers.php"
-        ]
+        }
     },
     "scripts": {
         "post-autoload-dump": [
