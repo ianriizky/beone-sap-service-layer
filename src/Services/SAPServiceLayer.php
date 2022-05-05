@@ -47,7 +47,7 @@ class SAPServiceLayer
     ];
 
     /**
-     * @var \Ianriizky\TalentaApi\Http\Client\PendingRequest
+     * @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest
      */
     protected $request;
 

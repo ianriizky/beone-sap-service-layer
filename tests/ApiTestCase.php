@@ -25,7 +25,7 @@ class ApiTestCase extends TestCase
         $this->factory = Http::getFacadeRoot();
 
         $this->factory->macro('responseFromJsonPath', function (string $jsonPath, $status = 200, $headers = []) {
-            /** @var \Ianriizky\TalentaApi\Http\Client\Factory $factory */
+            /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
             $factory = $this;
             $body = json_decode(ApiTestCase::getJsonFromResponsesPath($jsonPath), true);
 
@@ -33,7 +33,7 @@ class ApiTestCase extends TestCase
         });
 
         $this->factory->macro('fakeUsingJsonPath', function (string $jsonPath, $status = 200, $headers = []) {
-            /** @var \Ianriizky\TalentaApi\Http\Client\Factory $factory */
+            /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
             $factory = $this;
 
             $factory->fake(function (Request $request) use ($factory, $jsonPath, $status, $headers) {
