@@ -63,6 +63,17 @@ class ApiTestCase extends TestCase
     }
 
     /**
+     * Return JSON request from the given path.
+     *
+     * @param  string  $jsonPath
+     * @return string|false
+     */
+    public static function getJsonFromRequestsPath(string $jsonPath)
+    {
+        return file_get_contents(__DIR__.'/requests/'.$jsonPath);
+    }
+
+    /**
      * Return JSON response from the given path.
      *
      * @param  string  $jsonPath
@@ -70,6 +81,6 @@ class ApiTestCase extends TestCase
      */
     public static function getJsonFromResponsesPath(string $jsonPath)
     {
-        return file_get_contents(__DIR__.'../../responses/'.$jsonPath);
+        return file_get_contents(__DIR__.'/responses/'.$jsonPath);
     }
 }
