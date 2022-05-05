@@ -5,6 +5,9 @@ namespace Ianriizky\BeoneSAPServiceLayer\Tests;
 use Ianriizky\BeoneSAPServiceLayer\Support\Facades\Http;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\Response;
+use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Testing\Assert;
 use Mockery as m;
 
@@ -16,6 +19,11 @@ class ApiTestCase extends TestCase
     protected $factory;
 
     /**
+     * @var string
+     */
+    public $sessionId;
+
+    /**
      * {@inheritDoc}
      */
     protected function setUp(): void
@@ -23,6 +31,59 @@ class ApiTestCase extends TestCase
         parent::setUp();
 
         $this->factory = Http::getFacadeRoot();
+
+        $testCaseClass = $this;
+
+        $this->factory->macro('failedLoginResponse', function (array $credentials) {
+            /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
+            $factory = $this;
+
+            return $factory->response([
+                'error' => [
+                    'code' => 100000027,
+                    'message' => [
+                        'lang' => 'en-us',
+                        'value' => $credentials['CompanyDB'] === env('SAP_COMPANY_DB')
+                            ? 'company not exist in company object cache : server(hanab1dev.beonesolution.com:30015) company(SBODEMOAUs'
+                            : 'Login failed',
+                    ]
+                ],
+            ], HttpResponse::HTTP_UNAUTHORIZED, [
+                'Date' => [Carbon::now()->toRfc7231String()],
+                'Server' => ['Apache/2.4.34 (Unix)'],
+                'DataServiceVersion' => ['3.0'],
+                'Content-Type' => ['application/json;charset=utf-8'],
+                'Vary' => ['Accept-Encoding'],
+                'Set-Cookie' => [
+                    'ROUTEID=.node1; path=/b1s',
+                ],
+                'Transfer-Encoding' => ['chunked'],
+            ]);
+        });
+
+        $this->factory->macro('successLoginResponse', function (Request $request) use (&$testCaseClass) {
+            /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
+            $factory = $this;
+
+            return $factory->response([
+                'odata.metadata' => Str::replace('/Login', '/$metadata#B1Sessions/@Element', $request->url()),
+                'SessionId' => $testCaseClass->sessionId = Str::uuid(),
+                'Version' => '930230',
+                'SessionTimeout' => 30,
+            ], HttpResponse::HTTP_OK, [
+                'Date' => [Carbon::now()->toRfc7231String()],
+                'Server' => ['Apache/2.4.34 (Unix)'],
+                'DataServiceVersion' => ['3.0'],
+                'Content-Type' => ['application/json;odata=minimalmetadata;charset=utf-8'],
+                'Set-Cookie' => [
+                    'B1SESSION='.$testCaseClass->sessionId.';HttpOnly;',
+                    'CompanyDB='.env('SAP_COMPANY_DB').';HttpOnly;',
+                    'ROUTEID=.node1; path=/b1s',
+                ],
+                'Vary' => ['Accept-Encoding'],
+                'Transfer-Encoding' => ['chunked'],
+            ]);
+        });
 
         $this->factory->macro('responseFromJsonPath', function (string $jsonPath, $status = 200, $headers = []) {
             /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
@@ -37,10 +98,32 @@ class ApiTestCase extends TestCase
             $factory = $this;
 
             $factory->fake(function (Request $request) use ($factory, $jsonPath, $status, $headers) {
-                // todo: assert request cookies authentication here
+                if (Str::contains($request->url(), '/Login')) {
+                    $credentials = json_decode($request->body(), true);
+
+                    if ($credentials['CompanyDB'] === env('SAP_COMPANY_DB') &&
+                        $credentials['UserName'] === env('SAP_USERNAME') &&
+                        $credentials['Password'] === env('SAP_PASSWORD')) {
+                        return $factory->successLoginResponse($request);
+                    }
+
+                    return $factory->failedLoginResponse($credentials);
+                }
+
+                Assert::assertTrue($request->hasSAPAuthenticationHeader());
 
                 return $factory->responseFromJsonPath($jsonPath, $status, $headers);
             });
+        });
+
+        Request::macro('hasSAPAuthenticationHeader', function () use ($testCaseClass) {
+            /** @var \Illuminate\Http\Client\Request $request */
+            $request = $this;
+
+            return $request->hasHeader(
+                'Cookie',
+                'B1SESSION='.$testCaseClass->sessionId.'; CompanyDB='.env('SAP_COMPANY_DB').'; ROUTEID=.node1'
+            );
         });
 
         Response::macro('assertSameWithJsonPath', function (string $expectedJsonPath) {
