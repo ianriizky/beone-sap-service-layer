@@ -85,7 +85,7 @@ class ApiTestCase extends TestCase
             ]);
         });
 
-        $this->factory->macro('responseFromJsonPath', function (string $jsonPath, $status = 200, $headers = []) {
+        $this->factory->macro('responseFromJsonPath', function (string $jsonPath, $status = HttpResponse::HTTP_OK, $headers = []) {
             /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
             $factory = $this;
             $body = json_decode(ApiTestCase::getJsonFromResponsesPath($jsonPath), true);
@@ -93,7 +93,7 @@ class ApiTestCase extends TestCase
             return $factory->response($body, $status, $headers);
         });
 
-        $this->factory->macro('fakeUsingJsonPath', function (string $jsonPath, $status = 200, $headers = []) {
+        $this->factory->macro('fakeUsingJsonPath', function (string $jsonPath, $status = HttpResponse::HTTP_OK, $headers = []) {
             /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
             $factory = $this;
 
