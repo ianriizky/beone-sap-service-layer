@@ -31,19 +31,17 @@ class SAPServiceLayer
      *
      * @var array<int, string>
      */
-    public static $escapedMethods = [
-        'createRequestInstance',
+    protected static $escapedMethods = [
         'sendRequestToSAP',
-
-        // Concerns\HandleAuthentication
-        'isRequestAuthenticated',
         'authenticateRequest',
+        'isRequestAuthenticated',
         'getCookiesFromLogin',
         'getCredentials',
         'retryRequestWhenUnauthorized',
-
-        // Api\Login
         'sendLoginRequest',
+        'createRequestInstance',
+        'createFreshRequestInstance',
+        'parseBaseUrl',
     ];
 
     /**
