@@ -2,6 +2,7 @@
 
 namespace Ianriizky\BeoneSAPServiceLayer\Tests;
 
+use Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory;
 use Ianriizky\BeoneSAPServiceLayer\Support\Facades\Http;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\Response;
@@ -93,21 +94,20 @@ class ApiTestCase extends TestCase
             return $factory->response($body, $status, $headers);
         });
 
+        $this->factory->macro('fakeLogin', function () {
+            /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
+            $factory = $this;
+
+            $factory->fake(ApiTestCase::validateLoginCallback($factory));
+        });
+
         $this->factory->macro('fakeUsingJsonPath', function (string $jsonPath, $status = HttpResponse::HTTP_OK, $headers = []) {
             /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
             $factory = $this;
 
             $factory->fake(function (Request $request) use ($factory, $jsonPath, $status, $headers) {
                 if (Str::contains($request->url(), '/Login')) {
-                    $credentials = json_decode($request->body(), true);
-
-                    if ($credentials['CompanyDB'] === env('SAP_COMPANY_DB') &&
-                        $credentials['UserName'] === env('SAP_USERNAME') &&
-                        $credentials['Password'] === env('SAP_PASSWORD')) {
-                        return $factory->successLoginResponse($request);
-                    }
-
-                    return $factory->failedLoginResponse($credentials);
+                    return ApiTestCase::validateLoginCallback($factory)($request);
                 }
 
                 Assert::assertTrue($request->hasSAPAuthenticationHeader());
@@ -165,5 +165,26 @@ class ApiTestCase extends TestCase
     public static function getJsonFromResponsesPath(string $jsonPath)
     {
         return file_get_contents(__DIR__.'/responses/'.$jsonPath);
+    }
+
+    /**
+     * Create callback to run login validation process.
+     *
+     * @param  \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory  $factory
+     * @return callable
+     */
+    public static function validateLoginCallback(Factory $factory)
+    {
+        return function (Request $request) use ($factory) {
+            $credentials = json_decode($request->body(), true);
+
+            if ($credentials['CompanyDB'] === env('SAP_COMPANY_DB') &&
+                $credentials['UserName'] === env('SAP_USERNAME') &&
+                $credentials['Password'] === env('SAP_PASSWORD')) {
+                return $factory->successLoginResponse($request);
+            }
+
+            return $factory->failedLoginResponse($credentials);
+        };
     }
 }
