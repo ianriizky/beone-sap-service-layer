@@ -44,8 +44,8 @@ class ApiTestCase extends TestCase
                     'code' => 100000027,
                     'message' => [
                         'lang' => 'en-us',
-                        'value' => $credentials['CompanyDB'] === env('SAP_COMPANY_DB')
-                            ? 'company not exist in company object cache : server(hanab1dev.beonesolution.com:30015) company(SBODEMOAUs'
+                        'value' => $credentials['CompanyDB'] !== env('SAP_COMPANY_DB')
+                            ? 'company not exist in company object cache : server(hanab1dev.beonesolution.com:30015) company('.$credentials['CompanyDB']
                             : 'Login failed',
                     ]
                 ],
