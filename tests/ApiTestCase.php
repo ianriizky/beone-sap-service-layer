@@ -47,7 +47,7 @@ class ApiTestCase extends TestCase
                         'value' => $credentials['CompanyDB'] !== env('SAP_COMPANY_DB')
                             ? 'company not exist in company object cache : server(hanab1dev.beonesolution.com:30015) company('.$credentials['CompanyDB']
                             : 'Login failed',
-                    ]
+                    ],
                 ],
             ], HttpResponse::HTTP_UNAUTHORIZED, [
                 'Date' => [Carbon::now()->toRfc7231String()],
