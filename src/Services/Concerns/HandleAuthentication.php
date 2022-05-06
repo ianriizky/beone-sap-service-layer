@@ -99,7 +99,9 @@ trait HandleAuthentication
      */
     protected function retryRequestWhenUnauthorized(): Closure
     {
-        return function (Throwable $exception, PendingRequest $request) {
+        $request = $this->request;
+
+        return function (Throwable $exception) use ($request) {
             if (! $exception instanceof RequestException || $exception->getCode() !== HttpResponse::HTTP_UNAUTHORIZED) {
                 return false;
             }
