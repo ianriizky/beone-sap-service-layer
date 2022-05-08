@@ -32,7 +32,7 @@ trait Login
      * @param  array  $data
      * @return \Illuminate\Http\Client\Response
      */
-    protected function Login(array $data): Response
+    protected function postLogin(array $data): Response
     {
         return static::sendLoginRequest($data, $this->request);
     }

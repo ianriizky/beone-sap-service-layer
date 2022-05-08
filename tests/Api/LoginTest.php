@@ -13,11 +13,11 @@ use Illuminate\Http\Response as HttpResponse;
  */
 class LoginTest extends ApiTestCase
 {
-    public function test_Login_response_200()
+    public function test_postLogin_response_200()
     {
         $this->factory->fakeLogin();
 
-        tap(SAPServiceLayer::Login([
+        tap(SAPServiceLayer::postLogin([
             'CompanyDB' => env('SAP_COMPANY_DB'),
             'UserName' => env('SAP_USERNAME'),
             'Password' => env('SAP_PASSWORD'),
@@ -34,7 +34,7 @@ class LoginTest extends ApiTestCase
         $this->factory->assertSentCount(1);
     }
 
-    public function test_Login_response_401_invalid_companydb()
+    public function test_postLogin_response_401_invalid_companydb()
     {
         $this->factory->fakeLogin();
 
@@ -42,7 +42,7 @@ class LoginTest extends ApiTestCase
         $this->expectExceptionCode(HttpResponse::HTTP_UNAUTHORIZED);
 
         try {
-            SAPServiceLayer::Login([
+            SAPServiceLayer::postLogin([
                 'CompanyDB' => $companyDB = env('SAP_COMPANY_DB').'s',
                 'UserName' => env('SAP_USERNAME'),
                 'Password' => env('SAP_PASSWORD'),
@@ -59,7 +59,7 @@ class LoginTest extends ApiTestCase
         $this->factory->assertSentCount(1);
     }
 
-    public function test_Login_response_401_invalid_credentials()
+    public function test_postLogin_response_401_invalid_credentials()
     {
         $this->factory->fakeLogin();
 
@@ -67,7 +67,7 @@ class LoginTest extends ApiTestCase
         $this->expectExceptionCode(HttpResponse::HTTP_UNAUTHORIZED);
 
         try {
-            SAPServiceLayer::Login([
+            SAPServiceLayer::postLogin([
                 'CompanyDB' => env('SAP_COMPANY_DB'),
                 'UserName' => env('SAP_USERNAME').'s',
                 'Password' => env('SAP_PASSWORD').'s',

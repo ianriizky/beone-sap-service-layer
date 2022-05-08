@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Facade;
  *
  * @see \Ianriizky\BeoneSAPServiceLayer\Services\Api\Login
  *
- * @method static \Illuminate\Http\Client\Response Login(array $data) Create "/Login" POST request to the SAP service layer.
+ * @method static \Illuminate\Http\Client\Response postLogin(array $data) Create "/Login" POST request to the SAP service layer.
  *
  * @see \Ianriizky\BeoneSAPServiceLayer\Services\SAPServiceLayer
  */

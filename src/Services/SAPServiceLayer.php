@@ -27,7 +27,7 @@ use RuntimeException;
  *
  * @see \Ianriizky\BeoneSAPServiceLayer\Services\Api\Login
  *
- * @method \Illuminate\Http\Client\Response Login(array $data) Create "/Login" POST request to the SAP service layer.
+ * @method \Illuminate\Http\Client\Response postLogin(array $data) Create "/Login" POST request to the SAP service layer.
  *
  * @see https://sap-samples.github.io/smb-summit-hackathon/b1sl.html
  */
