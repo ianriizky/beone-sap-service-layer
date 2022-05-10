@@ -30,7 +30,7 @@ jobs:
           tools: composer:v2
           coverage: xdebug
 
-      - name: Set Minimum PHP 8.1 Versions
+      - name: Set minimum PHP 8.1 versions
         uses: nick-invision/retry@v1
         with:
           timeout_minutes: 5
