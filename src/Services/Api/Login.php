@@ -2,7 +2,7 @@
 
 namespace Ianriizky\BeoneSAPServiceLayer\Services\Api;
 
-use Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
 
@@ -20,7 +20,7 @@ use Illuminate\Support\Arr;
  *
  * @see https://sap-samples.github.io/smb-summit-hackathon/b1sl.html
  *
- * @property \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest $request
+ * @property \Illuminate\Http\Client\PendingRequest $request
  */
 trait Login
 {
@@ -44,7 +44,7 @@ trait Login
      * so the $request property from the class will not be affected by this method.
      *
      * @param  array  $data
-     * @param  \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest  $request
+     * @param  \Illuminate\Http\Client\PendingRequest  $request
      * @return \Illuminate\Http\Client\Response
      */
     protected static function sendLoginRequest(array $data, PendingRequest $request): Response

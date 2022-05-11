@@ -10,7 +10,7 @@ use Illuminate\Http\Client\Response;
  *
  * @see https://sap-samples.github.io/smb-summit-hackathon/b1sl.html
  *
- * @property \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest $request
+ * @property \Illuminate\Http\Client\PendingRequest $request
  */
 trait JournalEntries
 {

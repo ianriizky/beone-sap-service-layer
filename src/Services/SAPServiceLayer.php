@@ -59,7 +59,7 @@ class SAPServiceLayer
     ];
 
     /**
-     * @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest
+     * @var \Illuminate\Http\Client\PendingRequest
      */
     protected $request;
 

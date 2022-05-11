@@ -2,12 +2,12 @@
 
 namespace Ianriizky\BeoneSAPServiceLayer\Tests;
 
-use Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory;
-use Ianriizky\BeoneSAPServiceLayer\Support\Facades\Http;
+use Illuminate\Http\Client\Factory;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Testing\Assert;
 use Mockery as m;
@@ -15,7 +15,7 @@ use Mockery as m;
 class ApiTestCase extends TestCase
 {
     /**
-     * @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory
+     * @var \Illuminate\Http\Client\Factory
      */
     protected $factory;
 
@@ -36,7 +36,7 @@ class ApiTestCase extends TestCase
         $testCaseClass = $this;
 
         $this->factory->macro('failedLoginResponse', function (array $credentials) {
-            /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
+            /** @var \Illuminate\Http\Client\Factory $factory */
             $factory = $this;
 
             return $factory->response([
@@ -63,7 +63,7 @@ class ApiTestCase extends TestCase
         });
 
         $this->factory->macro('successLoginResponse', function (Request $request) use (&$testCaseClass) {
-            /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
+            /** @var \Illuminate\Http\Client\Factory $factory */
             $factory = $this;
 
             return $factory->response([
@@ -87,7 +87,7 @@ class ApiTestCase extends TestCase
         });
 
         $this->factory->macro('responseFromJsonPath', function (string $jsonPath, $status = HttpResponse::HTTP_OK, $headers = []) {
-            /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
+            /** @var \Illuminate\Http\Client\Factory $factory */
             $factory = $this;
             $body = json_decode(ApiTestCase::getJsonFromResponsesPath($jsonPath), true);
 
@@ -95,14 +95,14 @@ class ApiTestCase extends TestCase
         });
 
         $this->factory->macro('fakeLogin', function () {
-            /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
+            /** @var \Illuminate\Http\Client\Factory $factory */
             $factory = $this;
 
             $factory->fake(ApiTestCase::validateLoginCallback($factory));
         });
 
         $this->factory->macro('fakeUsingJsonPath', function (string $jsonPath, $status = HttpResponse::HTTP_OK, $headers = []) {
-            /** @var \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory $factory */
+            /** @var \Illuminate\Http\Client\Factory $factory */
             $factory = $this;
 
             $factory->fake(function (Request $request) use ($factory, $jsonPath, $status, $headers) {
@@ -170,7 +170,7 @@ class ApiTestCase extends TestCase
     /**
      * Create callback to run login validation process.
      *
-     * @param  \Ianriizky\BeoneSAPServiceLayer\Http\Client\Factory  $factory
+     * @param  \Illuminate\Http\Client\Factory  $factory
      * @return callable
      */
     public static function validateLoginCallback(Factory $factory)

@@ -6,8 +6,8 @@ use Closure;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\CookieJarInterface;
 use GuzzleHttp\Cookie\SetCookie;
-use Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest;
 use Ianriizky\BeoneSAPServiceLayer\Services\Api;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Response as HttpResponse;
@@ -17,7 +17,7 @@ use Psr\Http\Message\RequestInterface;
 use Throwable;
 
 /**
- * @property \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest $request
+ * @property \Illuminate\Http\Client\PendingRequest $request
  * @property array $config
  */
 trait HandleAuthentication
@@ -70,7 +70,7 @@ trait HandleAuthentication
     /**
      * Return cookies value from the "/Login" request for authentication purpose.
      *
-     * @param  \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest  $request
+     * @param  \Illuminate\Http\Client\PendingRequest  $request
      * @return \GuzzleHttp\Cookie\CookieJar
      */
     protected function getCookiesFromLogin(PendingRequest $request): CookieJar

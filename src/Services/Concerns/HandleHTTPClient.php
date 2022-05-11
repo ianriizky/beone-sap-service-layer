@@ -2,8 +2,8 @@
 
 namespace Ianriizky\BeoneSAPServiceLayer\Services\Concerns;
 
-use Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest;
-use Ianriizky\BeoneSAPServiceLayer\Support\Facades\Http;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Http;
 
 trait HandleHTTPClient
 {
@@ -29,7 +29,7 @@ trait HandleHTTPClient
      * @param  string  $baseUrl
      * @param  string|bool|null  $sslVerify
      * @param  array  $options
-     * @return \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest
+     * @return \Illuminate\Http\Client\PendingRequest
      */
     protected function createRequestInstance(string $baseUrl, $sslVerify = null, array $options = []): PendingRequest
     {
@@ -48,7 +48,7 @@ trait HandleHTTPClient
     /**
      * Create a fresh Laravel HTTP client request instance using the previous $baseUrl and $options property.
      *
-     * @return \Ianriizky\BeoneSAPServiceLayer\Http\Client\PendingRequest
+     * @return \Illuminate\Http\Client\PendingRequest
      */
     protected function createFreshRequestInstance(): PendingRequest
     {
