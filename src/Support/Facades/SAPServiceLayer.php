@@ -6,6 +6,8 @@ use Ianriizky\BeoneSAPServiceLayer\Services\SAPServiceLayer as Service;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static \Illuminate\Http\Client\PendingRequest request()
+ *
  * @see \Ianriizky\BeoneSAPServiceLayer\Services\Api\ChartOfAccounts
  *
  * @method static \Illuminate\Http\Client\Response getChartOfAccountsId(string $id, array|string|null $query = null) Create "/ChartOfAccounts(:id)" GET request to the SAP service layer.
